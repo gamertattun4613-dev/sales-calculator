@@ -8,46 +8,119 @@
 header{padding:22px 4px 18px;display:flex;justify-content:space-between;align-items:center}.title{font-size:24px;font-weight:800}.sub{font-size:12px;color:var(--muted);margin-top:3px}.gear{background:#151c28;color:#fff;border:1px solid #303a4b;border-radius:14px;width:42px;height:42px;font-size:20px}
 .section{margin:10px 0 14px;border:1px solid #222d3d;border-radius:18px;background:var(--card);overflow:hidden}.section-title{padding:13px 15px;font-weight:800}.blue .section-title{background:#152d52}.teal .section-title{background:#103b36}.purple .section-title{background:#2b2050}
 .row{display:flex;align-items:center;gap:9px;padding:13px 14px;border-top:1px solid var(--line)}.label{flex:1;font-size:15px;line-height:1.25}.hint{font-size:11px;color:var(--muted);margin-top:3px}input[type=number]{width:105px;background:#202a38;border:1px solid #39465a;border-radius:11px;color:#fff;font-size:19px;text-align:right;padding:9px;outline:none}input[readonly]{opacity:.7}.unit{width:25px;color:var(--muted);font-size:13px}
-.calc{width:100%;border:0;border-radius:16px;background:var(--blue);color:#fff;font-weight:800;font-size:18px;padding:16px;margin:8px 0 18px}.result{background:linear-gradient(135deg,#14294b,#101a2a);border:1px solid #294d7d;border-radius:20px;padding:18px;text-align:center}.caption{color:#a9c8f7;font-size:13px}.amount{font-size:36px;font-weight:900;margin-top:5px}.note{color:var(--muted);font-size:11px;text-align:center;margin-top:10px}.auto{color:#75e3c9;font-size:11px;font-weight:700}.cast-row{display:flex;align-items:center;gap:9px;padding:10px 14px;border-top:1px solid var(--line)}
+.mode-note{display:none;margin:-2px 0 12px;padding:10px 12px;border-radius:12px;background:#1b2636;color:#b9c7d9;font-size:12px;line-height:1.45}.reset{width:100%;border:1px solid #4b5667;border-radius:14px;background:#171f2b;color:#fff;font-weight:800;font-size:15px;padding:13px;margin:0 0 12px}.calc{width:100%;border:0;border-radius:16px;background:var(--blue);color:#fff;font-weight:800;font-size:18px;padding:16px;margin:8px 0 18px}.result{background:linear-gradient(135deg,#14294b,#101a2a);border:1px solid #294d7d;border-radius:20px;padding:18px;text-align:center}.caption{color:#a9c8f7;font-size:13px}.amount{font-size:36px;font-weight:900;margin-top:5px}.note{color:var(--muted);font-size:11px;text-align:center;margin-top:10px}.auto{color:#75e3c9;font-size:11px;font-weight:700}.cast-row{display:flex;align-items:center;gap:9px;padding:10px 14px;border-top:1px solid var(--line)}
 </style></head><body><div class="app">
 <header><div><div class="title">売上計算アプリ</div><div class="sub">～ あなた専用の売上計算ツール ～</div></div><button class="gear" type="button">⚙️</button></header>
-<div class="section blue"><div class="section-title">💴 レジ金</div>
-<div class="row"><div class="label">お札</div><input id="a" type="number" min="0" inputmode="numeric" value="0"><div class="unit">K</div></div>
-<div class="row"><div class="label">500円玉</div><input id="b" type="number" min="0" inputmode="numeric" value="0"><div class="unit">枚</div></div>
-<div class="row"><div class="label">100円玉</div><input id="c" type="number" min="0" inputmode="numeric" value="0"><div class="unit">枚</div></div></div>
+<div class="section blue"><div class="section-title" id="cashTitle">💴 レジ金</div>
+<div id="countMode">
+<div class="row"><div class="label">お札</div><input id="a" type="number" min="0" inputmode="numeric" placeholder="0"><div class="unit">K</div></div>
+<div class="row"><div class="label">500円玉</div><input id="b" type="number" min="0" inputmode="numeric" placeholder="0"><div class="unit">枚</div></div>
+<div class="row"><div class="label">100円玉</div><input id="c" type="number" min="0" inputmode="numeric" placeholder="0"><div class="unit">枚</div></div>
+</div>
+<div id="amountMode" style="display:none">
+<div class="row"><div class="label">現金（預かり金含む）<div class="hint">合計金額のみ入力</div></div><input id="cashTotal" type="number" min="0" inputmode="numeric" placeholder="0"><div class="unit">円</div></div>
+<div class="mode-note" id="modeNote">枚数入力を使わず、現金（預かり金含む）の合計金額からレジ金を計算します。</div>
+</div></div>
 <div class="section teal"><div class="section-title">👤 キャスト関連</div>
-<div class="row"><div class="label">準備済み未精算キャスト人数<div class="hint">人数分の預かり金入力欄が表示されます</div></div><input id="castCount" type="number" min="0" step="1" inputmode="numeric" value="0"><div class="unit">人</div></div>
+<div class="row"><div class="label">準備済み未精算キャスト人数<div class="hint">人数分の預かり金入力欄が表示されます</div></div><input id="castCount" type="number" min="0" step="1" inputmode="numeric" placeholder="0"><div class="unit">人</div></div>
 <div id="castInputs"></div>
-<div class="row"><div class="label">精算済みキャストの預かり金<div class="hint">入力すると雑費10%を自動計算</div></div><input id="e" type="number" min="0" inputmode="numeric" value="0"><div class="unit">円</div></div></div>
+<div class="row"><div class="label">精算済みキャストの預かり金<div class="hint">入力すると雑費10%を自動計算</div></div><input id="e" type="number" min="0" inputmode="numeric" placeholder="0"><div class="unit">円</div></div></div>
 <div class="section purple"><div class="section-title">⚙️ 経費・調整</div>
-<div class="row"><div class="label">雑費<div class="hint">精算済みキャスト預かり金の10%を自動計算</div></div><input id="f" type="number" value="0" readonly><div class="unit">円</div></div>
-<div class="row"><div class="label">その他雑費</div><input id="g" type="number" min="0" inputmode="numeric" value="0"><div class="unit">円</div></div>
-<div class="row"><div class="label">中締め</div><input id="h" type="number" min="0" inputmode="numeric" value="0"><div class="unit">円</div></div>
-<div class="row"><div class="label">キャストバック</div><input id="i" type="number" min="0" inputmode="numeric" value="0"><div class="unit">円</div></div></div>
+<div class="row"><div class="label">雑費<div class="hint">精算済みキャスト預かり金の10%を自動計算</div></div><input id="f" type="number" value="" readonly placeholder="0"><div class="unit">円</div></div>
+<div class="row"><div class="label">その他雑費</div><input id="g" type="number" min="0" inputmode="numeric" placeholder="0"><div class="unit">円</div></div>
+<div class="row"><div class="label">中締め</div><input id="h" type="number" min="0" inputmode="numeric" placeholder="0"><div class="unit">円</div></div>
+<div class="row"><div class="label">キャストバック</div><input id="i" type="number" min="0" inputmode="numeric" placeholder="0"><div class="unit">円</div></div></div>
 <div class="section"><div class="section-title">➕ 固定額設定</div><div class="row"><div class="label"><b>250,000円を加算</b><div class="hint">必要な時だけON / OFF</div></div><input id="fixed250" type="checkbox" checked></div><div class="row"><div class="label">200,000円<div class="hint">常に減算</div></div><div class="unit">−</div></div></div>
-<button class="calc" type="button" onclick="calc()">🧮 自動計算</button>
+<button class="reset" type="button" onclick="resetAll()">↺ 全項目リセット</button><button class="calc" type="button" onclick="calc()">🧮 自動計算</button>
 <div class="result"><div class="caption">レジ金（預かり金含む）</div><div id="amount" class="amount">¥ 0</div></div>
 <div class="note">レジ金の枚数 + 固定額 + キャスト預かり金 − 固定減算・雑費等<br><span class="auto">※ 雑費は精算済みキャスト預かり金の10%を自動計算</span></div>
 </div>
 <script>
-function num(id){const v=parseInt(document.getElementById(id).value,10);return Number.isFinite(v)?Math.max(0,v):0}
+let amountMode=false;
+
+function num(id){
+ const el=document.getElementById(id);
+ const v=parseInt(el.value,10);
+ return Number.isFinite(v)?Math.max(0,v):0;
+}
+
 function updateCastInputs(){
- const count=Math.max(0,Math.floor(num('castCount'))); const box=document.getElementById('castInputs');
- const old=Array.from(box.querySelectorAll('.castAmount')).map(x=>x.value); box.innerHTML='';
+ const count=Math.max(0,Math.floor(num('castCount')));
+ const box=document.getElementById('castInputs');
+ const old=Array.from(box.querySelectorAll('.castAmount')).map(x=>x.value);
+ box.innerHTML='';
  for(let j=0;j<count;j++){
-  const row=document.createElement('div'); row.className='cast-row';
+  const row=document.createElement('div');
+  row.className='cast-row';
   row.innerHTML='<div class="label">キャスト '+(j+1)+'</div><input class="castAmount" type="number" min="0" inputmode="numeric" placeholder="0"><div class="unit">円</div>';
-  const input=row.querySelector('input'); input.value=old[j]??''; input.addEventListener('input',calc); box.appendChild(row);
+  const input=row.querySelector('input');
+  input.value=old[j]??'';
+  input.addEventListener('input',calc);
+  box.appendChild(row);
  }
  calc();
 }
-function castTotal(){let total=0;document.querySelectorAll('.castAmount').forEach(x=>{const v=parseInt(x.value,10);if(Number.isFinite(v))total+=Math.max(0,v)});return total}
+
+function castTotal(){
+ let total=0;
+ document.querySelectorAll('.castAmount').forEach(x=>{
+  const v=parseInt(x.value,10);
+  if(Number.isFinite(v)) total+=Math.max(0,v);
+ });
+ return total;
+}
+
 function calc(){
- const e=num('e'); const f=Math.floor(e*0.10); document.getElementById('f').value=f;
- const d=castTotal();
- const t=num('a')*1000+num('b')*500+num('c')*100+(document.getElementById('fixed250').checked?250000:0)+d+e+num('h')+num('i')-(200000+f+num('g'));
+ const e=num('e');
+ const f=Math.floor(e*0.10);
+ document.getElementById('f').value=f||'';
+
+ let t;
+ if(amountMode){
+   // 現金（預かり金含む）の合計金額からレジ金を算出
+   t=num('cashTotal')
+     +(document.getElementById('fixed250').checked?250000:0)
+     -200000
+     +num('h')
+     +num('i')
+     -f
+     -num('g');
+ }else{
+   const d=castTotal();
+   t=num('a')*1000+num('b')*500+num('c')*100
+     +(document.getElementById('fixed250').checked?250000:0)
+     +d+e+num('h')+num('i')
+     -(200000+f+num('g'));
+ }
  document.getElementById('amount').textContent='¥ '+t.toLocaleString('ja-JP');
 }
-['a','b','c','e','g','h','i'].forEach(id=>document.getElementById(id).addEventListener('input',calc));
-document.getElementById('castCount').addEventListener('input',updateCastInputs);document.getElementById('fixed250').addEventListener('change',calc);updateCastInputs();
-</script></body></html>
+
+function toggleMode(){
+ amountMode=!amountMode;
+ document.getElementById('countMode').style.display=amountMode?'none':'block';
+ document.getElementById('amountMode').style.display=amountMode?'block':'none';
+ document.getElementById('cashTitle').textContent=amountMode?'💴 現金（預かり金含む）':'💴 レジ金';
+ document.getElementById('modeNote').style.display=amountMode?'block':'none';
+ document.querySelector('.gear').setAttribute('aria-label',amountMode?'枚数入力モードに戻す':'金額入力モードにする');
+ calc();
+}
+
+function resetAll(){
+ if(!confirm('入力した全項目をリセットしますか？')) return;
+ document.querySelectorAll('input[type="number"]').forEach(x=>x.value='');
+ document.getElementById('fixed250').checked=true;
+ document.getElementById('castInputs').innerHTML='';
+ document.getElementById('amount').textContent='¥ 0';
+ calc();
+}
+
+['a','b','c','cashTotal','e','g','h','i'].forEach(id=>{
+ document.getElementById(id).addEventListener('input',calc);
+});
+document.getElementById('castCount').addEventListener('input',updateCastInputs);
+document.getElementById('fixed250').addEventListener('change',calc);
+document.querySelector('.gear').addEventListener('click',toggleMode);
+
+updateCastInputs();
+calc();
+</script></script></body></html>
