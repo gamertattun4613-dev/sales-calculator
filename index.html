@@ -19,7 +19,7 @@ header{padding:22px 4px 18px;display:flex;justify-content:space-between;align-it
 </div>
 <div id="amountMode" style="display:none">
 <div class="row"><div class="label">現金（預かり金含む）<div class="hint">合計金額のみ入力</div></div><input id="cashTotal" type="number" min="0" inputmode="numeric" placeholder="0"><div class="unit">円</div></div>
-<div class="mode-note" id="modeNote">枚数入力を使わず、現金（預かり金含む）の合計金額からレジ金を計算します。</div>
+<div class="mode-note" id="modeNote">現金（預かり金含む）とその他の項目から、レジ金を逆算します。</div>
 </div></div>
 <div class="section teal"><div class="section-title">👤 キャスト関連</div>
 <div class="row"><div class="label">準備済み未精算キャスト人数<div class="hint">人数分の預かり金入力欄が表示されます</div></div><input id="castCount" type="number" min="0" step="1" inputmode="numeric" placeholder="0"><div class="unit">人</div></div>
@@ -79,12 +79,14 @@ function calc(){
  if(amountMode){
    // 現金（預かり金含む）の合計金額からレジ金を算出
    t=num('cashTotal')
-     +(document.getElementById('fixed250').checked?250000:0)
-     -200000
-     +num('h')
-     +num('i')
-     -f
-     -num('g');
+     -(document.getElementById('fixed250').checked?250000:0)
+     +200000
+     -castTotal()
+     -e
+     -num('h')
+     -num('i')
+     +f
+     +num('g');
  }else{
    const d=castTotal();
    t=num('a')*1000+num('b')*500+num('c')*100
