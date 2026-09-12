@@ -1,7 +1,7 @@
 <!doctype html><html lang="ja"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>現金合わせ</title>
+<title>売上計算アプリ</title>
 <style>
 :root{--bg:#090d15;--card:#121824;--line:#283345;--text:#f5f7fb;--muted:#9aa5b5;--blue:#3d8cff;--teal:#21c7a8;--purple:#8d6cff}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif}.app{max-width:560px;margin:auto;padding:env(safe-area-inset-top) 16px 28px}
@@ -10,7 +10,7 @@ header{padding:22px 4px 18px;display:flex;justify-content:space-between;align-it
 .row{display:flex;align-items:center;gap:9px;padding:13px 14px;border-top:1px solid var(--line)}.label{flex:1;font-size:15px;line-height:1.25}.hint{font-size:11px;color:var(--muted);margin-top:3px}input[type=number]{width:105px;background:#202a38;border:1px solid #39465a;border-radius:11px;color:#fff;font-size:19px;text-align:right;padding:9px;outline:none}input[readonly]{opacity:.7}.unit{width:25px;color:var(--muted);font-size:13px}
 .mode-note{display:none;margin:-2px 0 12px;padding:10px 12px;border-radius:12px;background:#1b2636;color:#b9c7d9;font-size:12px;line-height:1.45}.reset{width:100%;border:1px solid #4b5667;border-radius:14px;background:#171f2b;color:#fff;font-weight:800;font-size:15px;padding:13px;margin:0 0 12px}.calc{width:100%;border:0;border-radius:16px;background:var(--blue);color:#fff;font-weight:800;font-size:18px;padding:16px;margin:8px 0 18px}.result{background:linear-gradient(135deg,#14294b,#101a2a);border:1px solid #294d7d;border-radius:20px;padding:18px;text-align:center}.caption{color:#a9c8f7;font-size:13px}.amount{font-size:36px;font-weight:900;margin-top:5px}.note{color:var(--muted);font-size:11px;text-align:center;margin-top:10px}.auto{color:#75e3c9;font-size:11px;font-weight:700}.cast-row{display:flex;align-items:center;gap:9px;padding:10px 14px;border-top:1px solid var(--line)}
 </style></head><body><div class="app">
-<header><div><div class="title">現金合わせ</div><div class="sub">～ あなた専用の売上計算ツール ～</div></div><button class="gear" type="button">⚙️</button></header>
+<header><div><div class="title">売上計算アプリ</div><div class="sub">～ あなた専用の売上計算ツール ～</div></div><button class="gear" type="button">⚙️</button></header>
 <div class="section blue"><div class="section-title" id="cashTitle">💴 レジ金</div>
 <div id="countMode">
 <div class="row"><div class="label">お札</div><input id="a" type="number" min="0" inputmode="numeric" placeholder="0"><div class="unit">K</div></div>
@@ -26,14 +26,14 @@ header{padding:22px 4px 18px;display:flex;justify-content:space-between;align-it
 <div id="castInputs"></div>
 <div class="row"><div class="label">精算済みキャストの預かり金<div class="hint">入力すると雑費10%を自動計算</div></div><input id="e" type="number" min="0" inputmode="numeric" placeholder="0"><div class="unit">円</div></div></div>
 <div class="section purple"><div class="section-title">⚙️ 経費・調整</div>
-<div class="row"><div class="label">雑費<div class="hint">精算済みキャスト預かり金の10%を自動計算</div></div><input id="f" type="number" value="" readonly placeholder="0"><div class="unit">円</div></div>
+<div class="row"><div class="label">雑費<div class="hint">初期値は10%・必要なら手入力で変更可能</div></div><input id="f" type="number" min="0" inputmode="numeric" value="" placeholder="0"><div class="unit">円</div></div>
 <div class="row"><div class="label">その他雑費</div><input id="g" type="number" min="0" inputmode="numeric" placeholder="0"><div class="unit">円</div></div>
 <div class="row"><div class="label">中締め</div><input id="h" type="number" min="0" inputmode="numeric" placeholder="0"><div class="unit">円</div></div>
 <div class="row"><div class="label">キャストバック</div><input id="i" type="number" min="0" inputmode="numeric" placeholder="0"><div class="unit">円</div></div></div>
 <div class="section"><div class="section-title">➕ 固定額設定</div><div class="row"><div class="label"><b>250,000円を加算</b><div class="hint">必要な時だけON / OFF</div></div><input id="fixed250" type="checkbox" checked></div><div class="row"><div class="label">200,000円<div class="hint">常に減算</div></div><div class="unit">−</div></div></div>
 <button class="reset" type="button" onclick="resetAll()">↺ 全項目リセット</button><button class="calc" type="button" onclick="calc()">🧮 自動計算</button>
 <div class="result"><div class="caption">レジ金（預かり金含む）</div><div id="amount" class="amount">¥ 0</div></div>
-<div class="note">レジ金の枚数 + 固定額 + キャスト預かり金 − 固定減算・雑費等<br><span class="auto">※ 雑費は精算済みキャスト預かり金の10%を自動計算</span></div>
+<div class="note">レジ金の枚数 + 固定額 + キャスト預かり金 − 固定減算・雑費等<br><span class="auto">※ 雑費は初期値は10%・必要なら手入力で変更可能</span></div>
 </div>
 <script>
 let amountMode=false;
@@ -70,10 +70,22 @@ function castTotal(){
  return total;
 }
 
+let expenseManuallyEdited = false;
+
+document.getElementById('f').addEventListener('input', () => {
+  expenseManuallyEdited = true;
+});
+
+document.getElementById('e').addEventListener('input', () => {
+  if (!expenseManuallyEdited) {
+    const e = num('e');
+    document.getElementById('f').value = e ? Math.floor(e * 0.10) : '';
+  }
+});
+
 function calc(){
  const e=num('e');
- const f=Math.floor(e*0.10);
- document.getElementById('f').value=f||'';
+ const f=num('f');
 
  const fixed250=document.getElementById('fixed250').checked;
  let t;
