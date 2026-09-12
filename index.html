@@ -30,8 +30,8 @@ header{padding:22px 4px 18px;display:flex;justify-content:space-between;align-it
 <div class="row"><div class="label">その他雑費</div><input id="g" type="number" min="0" inputmode="numeric" placeholder="0"><div class="unit">円</div></div>
 <div class="row"><div class="label">中締め</div><input id="h" type="number" min="0" inputmode="numeric" placeholder="0"><div class="unit">円</div></div>
 <div class="row"><div class="label">キャストバック</div><input id="i" type="number" min="0" inputmode="numeric" placeholder="0"><div class="unit">円</div></div></div>
-<div class="section"><div class="section-title">➕ 固定額設定</div><div class="row"><div class="label"><b>250,000円を加算</b><div class="hint">必要な時だけON / OFF</div></div><input id="fixed250" type="checkbox" checked></div><div class="row"><div class="label">200,000円<div class="hint">常に減算</div></div><div class="unit">−</div></div></div>
-<button class="reset" type="button" onclick="resetAll()">↺ 全項目リセット</button><button class="calc" type="button" onclick="calc()">🧮 自動計算</button>
+<div class="section"><div class="section-title">➕ 固定額設定</div><div class="row"><div class="label"><b>250,000円を加算</b><div class="hint">先に抜いていればチェックを入れる</div></div><input id="fixed250" type="checkbox"></div><div class="row"><div class="label"><b>200,000円を減算</b><div class="hint">最終小銭込み20万先に抜いていたらチェックを外す</div></div><input id="fixed200" type="checkbox" checked></div></div>
+<button class="reset" type="button" onclick="resetAll()">↺ 全項目リセット</button>
 <div class="result"><div class="caption">レジ金（預かり金含む）</div><div id="amount" class="amount">¥ 0</div></div>
 <div class="note">レジ金の枚数 + 固定額 + キャスト預かり金 − 固定減算・雑費等<br><span class="auto">※ 雑費は初期値は10%・必要なら手入力で変更可能</span></div>
 </div>
@@ -103,7 +103,7 @@ function calc(){
      -e
      -num('h')
      -num('i')
-     +200000
+     +(document.getElementById('fixed200').checked?200000:0)
      +f
      +num('g');
  }else{
@@ -111,7 +111,7 @@ function calc(){
    t=num('a')*1000+num('b')*500+num('c')*100
      +(fixed250?250000:0)
      +d+e+num('h')+num('i')
-     -(200000+f+num('g'));
+     -(document.getElementById('fixed200').checked?200000:0)-f-num('g');
  }
  document.getElementById('amount').textContent='¥ '+t.toLocaleString('ja-JP');
 }
@@ -129,7 +129,9 @@ function toggleMode(){
 function resetAll(){
  if(!confirm('入力した全項目をリセットしますか？')) return;
  document.querySelectorAll('input[type="number"]').forEach(x=>x.value='');
- document.getElementById('fixed250').checked=true;
+ document.getElementById('fixed250').checked=false;
+document.getElementById('fixed200').checked=true;
+document.getElementById('fixed200').checked=true;
  document.getElementById('castInputs').innerHTML='';
  document.getElementById('amount').textContent='¥ 0';
  calc();
@@ -140,6 +142,8 @@ function resetAll(){
 });
 document.getElementById('castCount').addEventListener('input',updateCastInputs);
 document.getElementById('fixed250').addEventListener('change',calc);
+document.getElementById('fixed200').addEventListener('change',calc);
+document.getElementById('fixed200').addEventListener('change',calc);
 document.querySelector('.gear').addEventListener('click',toggleMode);
 
 updateCastInputs();
